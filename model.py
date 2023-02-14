@@ -118,15 +118,15 @@ class LitDiffusionModel(pl.LightningModule):
         [2]: https://pytorch-lightning.readthedocs.io/en/stable/
         [3]: https://www.pytorchlightning.ai/tutorials
         """
-        print("batch_idx = ",batch_idx)
-        print(batch)
+        # print("batch_idx = ",batch_idx)
+        # print(batch)
         X_T = batch
         X_T = X_T.to(torch.float32)
         # X_T = torch.tensor(X_T,dtype=float).to(device)
         # X_T = torch.from_numpy(X_T)
         # print("----"*64,X_T.shape," DType = ",X_T.dtype," zero = ",X_T[0].dtype)
         X_T_pred = self.model(X_T)
-        print("+++"*64,X_T_pred.shape," DType = ",X_T_pred.dtype," zero = ",X_T_pred[0].dtype)
+        # print("+++"*64,X_T_pred.shape," DType = ",X_T_pred.dtype," zero = ",X_T_pred[0].dtype)
         loss = nn.functional.mse_loss(X_T_pred, X_T)
         return loss
         
