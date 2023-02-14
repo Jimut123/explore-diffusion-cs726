@@ -117,7 +117,7 @@ class LitDiffusionModel(pl.LightningModule):
         X_T = batch
         print("----"*64,X_T.shape)
         X_T_pred = self.model(X_T)
-        print("----"*64,X_T_pred.shape)
+        print("+++"*64,X_T_pred.shape)
         loss = nn.functional.mse_loss(X_T_pred, X_T)
         return loss
         
