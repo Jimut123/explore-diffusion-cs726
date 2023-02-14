@@ -42,6 +42,10 @@ train_dataset = ThreeDSinDataset(args.train_data_path)
 
 train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=8)
 
+for item in train_dataloader:
+    print(item)
+    break
+
 run_name = f'n_dim={n_dim},n_steps={n_steps},lbeta={lbeta:.3e},ubeta={ubeta:.3e},batch_size={batch_size},n_epochs={n_epochs}'
 
 trainer = pl.Trainer(
