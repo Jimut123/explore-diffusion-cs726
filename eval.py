@@ -4,7 +4,7 @@ import torch
 import numpy as np
 from model import LitDiffusionModel
 from eval_utils import *
-# from chamferdist import ChamferDistance
+from chamferdist import ChamferDistance
 
 parser = argparse.ArgumentParser()
 
@@ -81,21 +81,21 @@ for i_run in range(args.n_runs):
             f.write(f'train_nll: {train_nll}\n')
 
     # Chamfer
-    # if args.eval_chamfer:
-    #     cd = ChamferDistance()
-    #     test_chamfer = cd(
-    #         testdata.unsqueeze(0).float(), 
-    #         gendata.unsqueeze(0).float()
-    #     ).item()
-    #     train_chamfer = cd(
-    #         traindata.unsqueeze(0).float(),
-    #         gendata.unsqueeze(0).float()
-    #     ).item()
-    #     print(f'test_chamfer: {test_chamfer}')
-    #     print(f'train_chamfer: {train_chamfer}')
-    #     with open(f'{args.savedir}/{i_run:02d}_log.txt', 'a') as f:
-    #         f.write(f'test_chamfer: {test_chamfer}\n')
-    #         f.write(f'train_chamfer: {train_chamfer}\n')
+    if args.eval_chamfer:
+        cd = ChamferDistance()
+        test_chamfer = cd(
+            testdata.unsqueeze(0).float(), 
+            gendata.unsqueeze(0).float()
+        ).item()
+        train_chamfer = cd(
+            traindata.unsqueeze(0).float(),
+            gendata.unsqueeze(0).float()
+        ).item()
+        print(f'test_chamfer: {test_chamfer}')
+        print(f'train_chamfer: {train_chamfer}')
+        with open(f'{args.savedir}/{i_run:02d}_log.txt', 'a') as f:
+            f.write(f'test_chamfer: {test_chamfer}\n')
+            f.write(f'train_chamfer: {train_chamfer}\n')
     
     # Visualize overlay
     if args.vis_overlay:
@@ -121,3 +121,12 @@ for i_run in range(args.n_runs):
         )
         print(f'Output: {args.savedir}/{fname}')
     print(64*'-')
+
+
+
+    """
+    python eval.py --ckpt_path runs/n_dim=3,n_steps=50,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=500/last.ckpt \
+                --hparams_path runs/n_dim=3,n_steps=50,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=500/lightning_logs/version_0/hparams.yaml \
+                --eval_nll --vis_diffusion --vis_overlay
+
+    """
