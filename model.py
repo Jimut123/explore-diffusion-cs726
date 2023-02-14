@@ -115,7 +115,7 @@ class LitDiffusionModel(pl.LightningModule):
         [3]: https://www.pytorchlightning.ai/tutorials
         """
         X_T = batch
-        X_T = X_T.reshape((X_T.shape[1], X_T.shape[0]))
+        # X_T = X_T.reshape((X_T.shape[1], X_T.shape[0]))
         print("----"*64,X_T.shape)
         X_T_pred = self.model(X_T)
         print("+++"*64,X_T_pred.shape)
