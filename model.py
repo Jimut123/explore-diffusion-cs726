@@ -118,6 +118,8 @@ class LitDiffusionModel(pl.LightningModule):
         [2]: https://pytorch-lightning.readthedocs.io/en/stable/
         [3]: https://www.pytorchlightning.ai/tutorials
         """
+        print("batch_idx = ",batch_idx)
+        print(batch)
         X_T = batch
         X_T = torch.tensor(X_T,dtype=float).to(device)
         # X_T = torch.from_numpy(X_T)
