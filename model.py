@@ -115,10 +115,9 @@ class LitDiffusionModel(pl.LightningModule):
         [3]: https://www.pytorchlightning.ai/tutorials
         """
         X_T = batch
-        # X_T = X_T.reshape((X_T.shape[1], X_T.shape[0]))
-        print("----"*64,X_T.shape)
+        print("----"*64,X_T.shape," DType = ",X_T.dtype," zero = ",X_T[0].dtype)
         X_T_pred = self.model(X_T)
-        print("+++"*64,X_T_pred.shape)
+        print("+++"*64,X_T_pred.shape," DType = ",X_T_pred.dtype," zero = ",X_T_pred[0].dtype)
         loss = nn.functional.mse_loss(X_T_pred, X_T)
         return loss
         
