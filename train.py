@@ -45,6 +45,8 @@ train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_s
 run_name = f'n_dim={n_dim},n_steps={n_steps},lbeta={lbeta:.3e},ubeta={ubeta:.3e},batch_size={batch_size},n_epochs={n_epochs}'
 
 trainer = pl.Trainer(
+    accelerator="gpu", 
+    devices=[0],
     deterministic=True,
     logger=pl.loggers.TensorBoardLogger(f'{savedir}/{run_name}/'),
     max_epochs=n_epochs,
