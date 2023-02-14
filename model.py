@@ -115,6 +115,7 @@ class LitDiffusionModel(pl.LightningModule):
         [3]: https://www.pytorchlightning.ai/tutorials
         """
         X_T = batch
+        print(X_T.size)
         X_T_pred = self.model(X_T)
         loss = nn.functional.mse_loss(X_T_pred, X_T)
         return loss
