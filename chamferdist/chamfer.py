@@ -9,7 +9,10 @@ from typing import Optional, Union
 import torch
 
 # Throws an error without this import
-from chamferdist import _C
+# from chamferdist import _C
+
+from pytorch3d import _C
+
 from torch.autograd import Function
 from torch.autograd.function import once_differentiable
 
