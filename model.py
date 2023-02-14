@@ -1,33 +1,14 @@
 import torch
+import numpy as np
+from tqdm import tqdm
 import pytorch_lightning as pl
 from collections import OrderedDict
 from torch import optim, nn, utils, Tensor
 
 
 
-
-class NN(nn.Module):
-  def __init__(self, layer_ls, lr, weight_decay):
-    super(NN, self).__init__()
-    od = OrderedDict()
-    for i in range(1, len(layer_ls)):
-      od["dense{}".format(i)] = nn.Linear(layer_ls[i - 1], layer_ls[i])
-      if i < len(layer_ls) - 1:
-        od["relu{}".format(i)] = nn.ReLU()
-
-    self.neuralNet = nn.Sequential(od)
-    self.optimizer = torch.optim.Adam(self.neuralNet.parameters(), lr = lr, weight_decay = weight_decay)
-    self.loss = torch.nn.MSELoss()
-
-  def forward(self, x):
-    x = torch.Tensor(x)
-    # x = torch.flatten(x)
-    res = self.neuralNet(x)
-    return res
-
-
 class LitDiffusionModel(pl.LightningModule):
-    def __init__(self, n_dim=3, model, batch_size=32, n_steps=200, lbeta=1e-5, ubeta=1e-2):
+    def __init__(self, n_dim=3, n_steps=200, lbeta=1e-5, ubeta=1e-2):
         super().__init__()
         """
         If you include more hyperparams (e.g. `n_layers`), be sure to add that to `argparse` from `train.py`.
@@ -45,7 +26,12 @@ class LitDiffusionModel(pl.LightningModule):
         Make sure that your hyperparameter behaves as expected and is being saved correctly in `hparams.yaml`.
         """
         self.time_embed = None
-        self.model = model
+        self.model = nn.Sequential(nn.Linear(3, 64), 
+                                   nn.ReLU(), 
+                                   nn.Linear(64, 128), 
+                                   nn.ReLU(), 
+                                   nn.Linear(128, 3),
+                                   nn.ReLU())
 
         """
         Be sure to save at least these 2 parameters in the model instance.
@@ -128,6 +114,10 @@ class LitDiffusionModel(pl.LightningModule):
         [2]: https://pytorch-lightning.readthedocs.io/en/stable/
         [3]: https://www.pytorchlightning.ai/tutorials
         """
+        X_T = batch
+        X_T_pred = self.model(X_T)
+        loss = nn.functional.mse_loss(X_T_pred, X_T)
+        return loss
         
 
     def sample(self, n_samples, progress=False, return_intermediate=False):
@@ -144,7 +134,19 @@ class LitDiffusionModel(pl.LightningModule):
             i.e. a Tensor of size (n_samples, n_dim) and a list of `self.n_steps` Tensors of size (n_samples, n_dim) each.
             Return: (n_samples, n_dim)(final result), [(n_samples, n_dim)(intermediate) x n_steps]
         """
-        pass
+        xt = torch.tensor(np.random.randn(n_samples, self.dim)).float()
+        ls = [xt.cpu().detach().numpy()]
+        if progress:
+            for t in tqdm(range(self.n_steps), ascii = True):
+                xt = self.p_sample(xt, self.n_steps - t - 1)
+                if return_intermediate:
+                    ls.append(xt.cpu().detach().numpy())
+        else:
+             for t in range(self.n_steps):
+                xt = self.p_sample(xt, self.n_steps - t - 1)
+                if return_intermediate:
+                    ls.append(xt.cpu().detach().numpy())
+        return xt.cpu().detach().numpy() if not return_intermediate else xt.cpu().detach().numpy(), ls
 
     def configure_optimizers(self):
         """
@@ -153,7 +155,5 @@ class LitDiffusionModel(pl.LightningModule):
         You may choose to add certain hyperparameters of the optimizers to the `train.py` as well.
         In our experiments, we chose one good value of optimizer hyperparameters for all experiments.
         """
-        optimizer = torch.optim.Adam(self.model.parameters(), lr=1e-3)
-        lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1)
-        return [optimizer], [lr_scheduler]
-
+        optimizer = optim.Adam(self.parameters(), lr=1e-3)
+        return optimizer
