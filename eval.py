@@ -4,7 +4,7 @@ import torch
 import numpy as np
 from model import LitDiffusionModel
 from eval_utils import *
-from chamferdist import ChamferDistance
+# from chamferdist import ChamferDistance
 
 parser = argparse.ArgumentParser()
 
@@ -81,21 +81,21 @@ for i_run in range(args.n_runs):
             f.write(f'train_nll: {train_nll}\n')
 
     # Chamfer
-    if args.eval_chamfer:
-        cd = ChamferDistance()
-        test_chamfer = cd(
-            testdata.unsqueeze(0).float(), 
-            gendata.unsqueeze(0).float()
-        ).item()
-        train_chamfer = cd(
-            traindata.unsqueeze(0).float(),
-            gendata.unsqueeze(0).float()
-        ).item()
-        print(f'test_chamfer: {test_chamfer}')
-        print(f'train_chamfer: {train_chamfer}')
-        with open(f'{args.savedir}/{i_run:02d}_log.txt', 'a') as f:
-            f.write(f'test_chamfer: {test_chamfer}\n')
-            f.write(f'train_chamfer: {train_chamfer}\n')
+    # if args.eval_chamfer:
+    #     cd = ChamferDistance()
+    #     test_chamfer = cd(
+    #         testdata.unsqueeze(0).float(), 
+    #         gendata.unsqueeze(0).float()
+    #     ).item()
+    #     train_chamfer = cd(
+    #         traindata.unsqueeze(0).float(),
+    #         gendata.unsqueeze(0).float()
+    #     ).item()
+    #     print(f'test_chamfer: {test_chamfer}')
+    #     print(f'train_chamfer: {train_chamfer}')
+    #     with open(f'{args.savedir}/{i_run:02d}_log.txt', 'a') as f:
+    #         f.write(f'test_chamfer: {test_chamfer}\n')
+    #         f.write(f'train_chamfer: {train_chamfer}\n')
     
     # Visualize overlay
     if args.vis_overlay:
