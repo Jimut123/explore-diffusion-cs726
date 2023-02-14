@@ -5,6 +5,10 @@ import pytorch_lightning as pl
 from collections import OrderedDict
 from torch import optim, nn, utils, Tensor
 
+use_cuda = torch.cuda.is_available()
+print('use_cuda: {}'.format(use_cuda))
+device = torch.device("cuda" if use_cuda else "cpu")
+print("Device to be used : ",device)
 
 
 class LitDiffusionModel(pl.LightningModule):
@@ -115,7 +119,7 @@ class LitDiffusionModel(pl.LightningModule):
         [3]: https://www.pytorchlightning.ai/tutorials
         """
         X_T = batch
-        X_T = torch.tensor(X_T)
+        X_T = X_T.to(device)
         # print("----"*64,X_T.shape," DType = ",X_T.dtype," zero = ",X_T[0].dtype)
         X_T_pred = self.model(X_T)
         print("+++"*64,X_T_pred.shape," DType = ",X_T_pred.dtype," zero = ",X_T_pred[0].dtype)
