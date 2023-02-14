@@ -119,7 +119,7 @@ class LitDiffusionModel(pl.LightningModule):
         [3]: https://www.pytorchlightning.ai/tutorials
         """
         X_T = batch
-        X_T = torch.FloatTensor(X_T)
+        X_T = torch.FloatTensor(X_T).cpu().numpy().copy()
         # X_T = torch.from_numpy(X_T)
         # print("----"*64,X_T.shape," DType = ",X_T.dtype," zero = ",X_T[0].dtype)
         X_T_pred = self.model(X_T)
