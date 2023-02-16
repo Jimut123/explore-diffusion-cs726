@@ -30,7 +30,7 @@ class LitDiffusionModel(pl.LightningModule):
         Make sure that your hyperparameter behaves as expected and is being saved correctly in `hparams.yaml`.
         """
         self.time_embed = None
-        self.model = nn.Sequential(nn.Linear(3, 64), 
+        self.model = nn.Sequential(nn.Linear(5, 64), 
                                    nn.ReLU(), 
                                    nn.Linear(64, 128), 
                                    nn.ReLU(), 
