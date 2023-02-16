@@ -145,7 +145,7 @@ class LitDiffusionModel(pl.LightningModule):
             i.e. a Tensor of size (n_samples, n_dim) and a list of `self.n_steps` Tensors of size (n_samples, n_dim) each.
             Return: (n_samples, n_dim)(final result), [(n_samples, n_dim)(intermediate) x n_steps]
         """
-        xt = torch.tensor(np.random.randn(n_samples, self.dim)).float()
+        xt = torch.tensor(np.random.randn(n_samples, self.n_dim)).float()
         ls = [xt.cpu().detach().numpy()]
         if progress:
             for t in tqdm(range(self.n_steps), ascii = True):
