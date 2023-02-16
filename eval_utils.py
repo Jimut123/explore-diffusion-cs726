@@ -24,9 +24,10 @@ def get_likelihood(data, pred, temperature):
     # return torch.mean(lh)
 
     #pred = torch.tensor(pred)
-    lh = torch.zeros(pred.shape(0))
-    dim = pred.shape(1)
-    for i in range(pred.shape(0)):
+    print(pred.shape)
+    lh = torch.zeros(pred.shape[0])
+    dim = pred.shape[1]
+    for i in range(pred.shape[0]):
         lh[i] = gaussian_kernel(pred[i,:], data, temperature)
     return torch.mean(lh)
 
