@@ -88,7 +88,7 @@ class LitDiffusionModel(pl.LightningModule):
         ### check again
         t_tensor = t * torch.ones((x.shape[0], 1))
         t_tensor = torch.cat((torch.sin(0.1 * t_tensor / self.n_steps), torch.cos(0.1 * t_tensor / self.n_steps)), dim = 1)
-        print("t tensor == ",t_tensor.shape," t shape == ",t.shape)
+        print("t tensor == ",t_tensor.shape," t == ",t)
         xt_app = torch.cat((x, t_tensor), dim = 1)
         print("xt_app tensor == ",xt_app.shape)
         print("x shape == ",x.shape)
