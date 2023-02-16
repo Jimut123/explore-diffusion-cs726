@@ -4,7 +4,6 @@ import torch
 import numpy as np
 from model import LitDiffusionModel
 from eval_utils import *
-from chamferdist import ChamferDistance
 
 parser = argparse.ArgumentParser()
 
@@ -82,6 +81,7 @@ for i_run in range(args.n_runs):
 
     # Chamfer
     if args.eval_chamfer:
+        from chamferdist import ChamferDistance
         cd = ChamferDistance()
         test_chamfer = cd(
             testdata.unsqueeze(0).float(), 
@@ -121,12 +121,3 @@ for i_run in range(args.n_runs):
         )
         print(f'Output: {args.savedir}/{fname}')
     print(64*'-')
-
-
-
-    """
-    python eval.py --ckpt_path runs/n_dim=3,n_steps=50,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=500/last.ckpt \
-                --hparams_path runs/n_dim=3,n_steps=50,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=500/lightning_logs/version_0/hparams.yaml \
-                --eval_nll --vis_diffusion --vis_overlay
-
-    """
