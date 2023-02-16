@@ -29,8 +29,15 @@ class LitDiffusionModel(pl.LightningModule):
         If your `model` is different for different datasets, you can use a hyperparameter to switch between them.
         Make sure that your hyperparameter behaves as expected and is being saved correctly in `hparams.yaml`.
         """
+        # t_tensor = t * torch.ones((x.shape[0], 1))
+        # t_tensor = torch.cat((torch.sin(0.1 * t_tensor / self.n_steps), torch.cos(0.1 * t_tensor / self.n_steps)), dim = 1)
+        # print("t tensor == ",t_tensor.shape," t == ",t)
+        # xt_app = torch.cat((x, t_tensor), dim = 1)
+        # print("xt_app tensor == ",xt_app.shape)
+        # print("x shape == ",x.shape)
+
         self.time_embed = None
-        self.model = nn.Sequential(nn.Linear(5, 64), 
+        self.model = nn.Sequential(nn.Linear(3, 64), 
                                    nn.ReLU(), 
                                    nn.Linear(64, 128), 
                                    nn.ReLU(), 
@@ -85,19 +92,10 @@ class LitDiffusionModel(pl.LightningModule):
         """
         Sample from p given x_t.
         """
-        ### check again
-        t_tensor = t * torch.ones((x.shape[0], 1))
-        t_tensor = torch.cat((torch.sin(0.1 * t_tensor / self.n_steps), torch.cos(0.1 * t_tensor / self.n_steps)), dim = 1)
-        print("t tensor == ",t_tensor.shape," t == ",t)
-        xt_app = torch.cat((x, t_tensor), dim = 1)
-        print("xt_app tensor == ",xt_app.shape)
-        print("x shape == ",x.shape)
-
         beta = self.betas[t]
         alpha = self.alphas[t]
         alpha_bar = self.alpha_bars[t]
-        print("$$$$$$$$$$$",xt_app.size())
-        mod_res = self.model(xt_app)
+        mod_res = self.model(x)
         term1 = beta * mod_res / (1 - alpha_bar).sqrt()
         term1 = (x - term1) / alpha.sqrt()
 
