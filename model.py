@@ -93,7 +93,7 @@ class LitDiffusionModel(pl.LightningModule):
         beta = self.betas[t]
         alpha = self.alphas[t]
         alpha_bar = self.alpha_bars[t]
-
+        print("$$$$$$$$$$$",xt_app.size())
         mod_res = self.model(xt_app)
         term1 = beta * mod_res / (1 - alpha_bar).sqrt()
         term1 = (x - term1) / alpha.sqrt()
