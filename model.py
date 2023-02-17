@@ -64,7 +64,7 @@ class LitDiffusionModel(pl.LightningModule):
         # t_embed = self.time_embed(t)e
         print("X shape = ",x.shape," t_tensor shape = ",t_tensor.shape)
         input_model = torch.cat((x, t_tensor), dim=1).float().to(device)
-        print(input_model.shape)
+        print("Model input = ",input_model.shape)
         return self.model(input_model)
 
 
