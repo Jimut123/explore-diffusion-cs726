@@ -61,7 +61,7 @@ class LitDiffusionModel(pl.LightningModule):
         # if not isinstance(t, torch.Tensor):
         #      t = torch.LongTensor([t]).expand(x.size(0))
         # t_embed = self.time_embed(t)
-        return self.model(torch.cat((x, t_tensor), dim=1).float())
+        return self.model(torch.cat((x, t_tensor), dim=1).float().to(device))
 
 
     def init_alpha_beta_schedule(self, lbeta, ubeta):
