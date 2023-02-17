@@ -29,15 +29,9 @@ class LitDiffusionModel(pl.LightningModule):
         If your `model` is different for different datasets, you can use a hyperparameter to switch between them.
         Make sure that your hyperparameter behaves as expected and is being saved correctly in `hparams.yaml`.
         """
-        # t_tensor = t * torch.ones((x.shape[0], 1))
-        # t_tensor = torch.cat((torch.sin(0.1 * t_tensor / self.n_steps), torch.cos(0.1 * t_tensor / self.n_steps)), dim = 1)
-        # print("t tensor == ",t_tensor.shape," t == ",t)
-        # xt_app = torch.cat((x, t_tensor), dim = 1)
-        # print("xt_app tensor == ",xt_app.shape)
-        # print("x shape == ",x.shape)
-
+        
         self.time_embed = None
-        self.model = nn.Sequential(nn.Linear(3, 64), 
+        self.model = nn.Sequential(nn.Linear(5, 64), 
                                    nn.ReLU(), 
                                    nn.Linear(64, 128), 
                                    nn.ReLU(), 
@@ -61,10 +55,14 @@ class LitDiffusionModel(pl.LightningModule):
         Notice here that `x` and `t` are passed separately. If you are using an architecture that combines
         `x` and `t` in a different way, modify this function appropriately.
         """
-        if not isinstance(t, torch.Tensor):
-            t = torch.LongTensor([t]).expand(x.size(0))
-        t_embed = self.time_embed(t)
-        return self.model(torch.cat((x, t_embed), dim=1).float())
+        t_tensor = t * torch.ones((x.shape[0], 1))
+        t_tensor = torch.cat((torch.sin(0.1 * t_tensor / self.n_steps), torch.cos(0.1 * t_tensor / self.n_steps)), dim = 1)
+        # xt_app = torch.cat((x, t_tensor), dim = 1)
+        # if not isinstance(t, torch.Tensor):
+        #      t = torch.LongTensor([t]).expand(x.size(0))
+        # t_embed = self.time_embed(t)
+        return self.model(torch.cat((x, t_tensor), dim=1).float())
+
 
     def init_alpha_beta_schedule(self, lbeta, ubeta):
         """
@@ -86,22 +84,28 @@ class LitDiffusionModel(pl.LightningModule):
         norm = torch.randn_like(x)
         # ab = alpha_bar at t timestep
         ab = self.alpha_bars[t]
-        return ab.sqrt() * x + (1 - ab).sqrt() * norm
+        return ab.sqrt() * x + (1 - ab).sqrt() * norm,norm
 
     def p_sample(self, x, t):
         """
         Sample from p given x_t.
         """
+        t_tensor = t * torch.ones((x.shape[0], 1))
+        t_tensor = torch.cat((torch.sin(0.1 * t_tensor / self.n_steps), torch.cos(0.1 * t_tensor / self.n_steps)), dim = 1)
+        xt_app = torch.cat((x, t_tensor), dim = 1)
+
         beta = self.betas[t]
         alpha = self.alphas[t]
         alpha_bar = self.alpha_bars[t]
-        mod_res = self.model(x)
+
+        mod_res = self.model(xt_app)
         term1 = beta * mod_res / (1 - alpha_bar).sqrt()
-        term1 = (x - term1) / alpha.sqrt()
+        term1 = (xt - term1) / alpha.sqrt()
 
         norm = beta.sqrt() * torch.randn_like(term1)
         term2 = norm if t > 0 else 0
         return term1 + term2
+
 
     def training_step(self, batch, batch_idx):
         """
@@ -123,12 +127,17 @@ class LitDiffusionModel(pl.LightningModule):
         # print(batch)
         X_T = batch
         X_T = X_T.to(torch.float32)
+        t = torch.randint(1,self.time_steps,(batch.shape[0],))
+        t = np.random.randint(0, self.steps, (n_samples, ))
+        t_tensor = torch.Tensor(t).reshape((-1, 1))
+        t_tensor = torch.cat((torch.sin(0.1 * t_tensor / self.n_steps), torch.cos(0.1 * t_tensor / self.n_steps)), dim = 1)
+        X_noise,noise=q_sample(X_T,t_tensor)
         # X_T = torch.tensor(X_T,dtype=float).to(device)
         # X_T = torch.from_numpy(X_T)
         # print("----"*64,X_T.shape," DType = ",X_T.dtype," zero = ",X_T[0].dtype)
-        X_T_pred = self.model(X_T)
+        X_T_pred = self.forward(X_T,t)
         # print("+++"*64,X_T_pred.shape," DType = ",X_T_pred.dtype," zero = ",X_T_pred[0].dtype)
-        loss = nn.functional.mse_loss(X_T_pred, X_T)
+        loss = nn.functional.mse_loss(X_T_pred, noise)
         return loss
         
 
