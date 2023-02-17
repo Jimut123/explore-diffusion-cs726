@@ -177,6 +177,8 @@ class LitDiffusionModel(pl.LightningModule):
                 xt = self.p_sample(xt, self.n_steps - t - 1)
                 if return_intermediate:
                     ls.append(xt.cpu().detach().numpy())
+        
+        print("1 ==> ",xt.cpu().detach().numpy().shape()," ls shape = ",ls)
         return xt.cpu().detach().numpy() if not return_intermediate else xt.cpu().detach().numpy(), ls
 
     def configure_optimizers(self):
