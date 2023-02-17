@@ -106,7 +106,7 @@ class LitDiffusionModel(pl.LightningModule):
 
         mod_res = self.model(xt_app)
         term1 = beta * mod_res / (1 - alpha_bar).sqrt()
-        term1 = (xt - term1) / alpha.sqrt()
+        term1 = (x - term1) / alpha.sqrt()
 
         norm = beta.sqrt() * torch.randn_like(term1)
         term2 = norm if t > 0 else 0
