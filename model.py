@@ -57,15 +57,15 @@ class LitDiffusionModel(pl.LightningModule):
         `x` and `t` in a different way, modify this function appropriately.
         """
         t_tensor = t.reshape((x.shape[0], 1)) * torch.ones((x.shape[0], 1))
-        print("SHAPE ---> ",torch.sin(0.1 * t_tensor / self.n_steps).shape)
+        # print("SHAPE ---> ",torch.sin(0.1 * t_tensor / self.n_steps).shape)
         t_tensor = torch.cat((torch.sin(0.1 * t_tensor / self.n_steps), torch.cos(0.1 * t_tensor / self.n_steps)), dim = 1).to(device)
         # xt_app = torch.cat((x, t_tensor), dim = 1)
         # if not isinstance(t, torch.Tensor):
         #      t = torch.LongTensor([t]).expand(x.size(0))
         # t_embed = self.time_embed(t)e
-        print("X shape = ",x.shape," t_tensor shape = ",t_tensor.shape)
+        # print("X shape = ",x.shape," t_tensor shape = ",t_tensor.shape)
         input_model = torch.cat((x, t_tensor), dim=1).float().to(device)
-        print("Model input = ",input_model.shape)
+        # print("Model input = ",input_model.shape)
         return self.model(input_model)
 
 
