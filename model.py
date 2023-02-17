@@ -60,7 +60,8 @@ class LitDiffusionModel(pl.LightningModule):
         # xt_app = torch.cat((x, t_tensor), dim = 1)
         # if not isinstance(t, torch.Tensor):
         #      t = torch.LongTensor([t]).expand(x.size(0))
-        # t_embed = self.time_embed(t)
+        # t_embed = self.time_embed(t)e
+        print("X shape = ",x.shape," t_tensor shape = ",t_tensor.shape)
         input_model = torch.cat((x, t_tensor), dim=1).float().to(device)
         print(input_model.shape)
         return self.model(input_model)
