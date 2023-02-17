@@ -130,7 +130,7 @@ class LitDiffusionModel(pl.LightningModule):
         t = np.random.randint(0, self.n_steps, (batch.shape[0], ))
         t_tensor = torch.Tensor(t).reshape((-1, 1))
         t_tensor = torch.cat((torch.sin(0.1 * t_tensor / self.n_steps), torch.cos(0.1 * t_tensor / self.n_steps)), dim = 1)
-        X_noise,noise=q_sample(X_T,t_tensor)
+        X_noise,noise=self.q_sample(X_T,t_tensor)
         # X_T = torch.tensor(X_T,dtype=float).to(device)
         # X_T = torch.from_numpy(X_T)
         # print("----"*64,X_T.shape," DType = ",X_T.dtype," zero = ",X_T[0].dtype)
