@@ -10,6 +10,11 @@ print('use_cuda: {}'.format(use_cuda))
 device = torch.device("cuda" if use_cuda else "cpu")
 print("Device to be used : ",device)
 
+"""
+ python eval.py --ckpt_path runs/n_dim=3,n_steps=50,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=10/last.ckpt \
+                --hparams_path runs/n_dim=3,n_steps=50,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=10/lightning_logs/version_0/hparams.yaml \
+                --eval_nll --vis_diffusion --vis_overlay
+"""
 
 class LitDiffusionModel(pl.LightningModule):
     def __init__(self, n_dim=3, n_steps=200, lbeta=1e-5, ubeta=1e-2):
