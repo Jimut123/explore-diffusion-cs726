@@ -84,7 +84,7 @@ class LitDiffusionModel(pl.LightningModule):
         norm = torch.randn_like(x).to(device)
         # ab = alpha_bar at t timestep
         ab = self.alpha_bars[t]
-        ab = ab.reshape([x.shape[0]]+(len(x.shape)-1)*[1])
+        ab = ab.reshape([x.shape[0]]+(len(x.shape)-1)*[1]).to(device)
         return ab.sqrt() * x + (1 - ab).sqrt() * norm, norm
 
     def p_sample(self, x, t):
