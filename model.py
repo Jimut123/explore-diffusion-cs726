@@ -135,7 +135,7 @@ class LitDiffusionModel(pl.LightningModule):
         # X_T = torch.tensor(X_T,dtype=float).to(device)
         # X_T = torch.from_numpy(X_T)
         # print("----"*64,X_T.shape," DType = ",X_T.dtype," zero = ",X_T[0].dtype)
-        X_T_pred = self.forward(X_T,t)
+        X_T_pred = self.forward(X_T,torch.tensor(t))
         # print("+++"*64,X_T_pred.shape," DType = ",X_T_pred.dtype," zero = ",X_T_pred[0].dtype)
         loss = nn.functional.mse_loss(X_T_pred, noise)
         return loss
