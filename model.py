@@ -80,8 +80,8 @@ class LitDiffusionModel(pl.LightningModule):
         """
         Sample from q given x_t.
         """
-        x = torch.Tensor(x)
-        norm = torch.randn_like(x)
+        # x = torch.Tensor(x)
+        norm = torch.randn_like(x).to(device)
         # ab = alpha_bar at t timestep
         ab = self.alpha_bars[t]
         ab = ab.reshape([x.shape[0]]+(len(x.shape)-1)*[1])
