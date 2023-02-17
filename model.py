@@ -179,7 +179,7 @@ class LitDiffusionModel(pl.LightningModule):
                     ls.append(xt.cpu().detach().numpy())
         
         print("1 ==> ",xt.cpu().detach().numpy().shape)
-        return xt.cpu().detach().numpy() if not return_intermediate else xt.cpu().detach().numpy(), ls.numpy()
+        return xt.cpu().detach().numpy() if not return_intermediate else xt.cpu().detach().numpy(), np.array(ls)
 
     def configure_optimizers(self):
         """
