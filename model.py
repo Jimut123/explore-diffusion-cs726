@@ -32,7 +32,7 @@ class LitDiffusionModel(pl.LightningModule):
         
         self.time_embed = None
         # 2 * batch_size + 3
-        self.model = nn.Sequential(nn.Linear(2048+3, 64), 
+        self.model = nn.Sequential(nn.Linear(5, 64), 
                                    nn.ReLU(), 
                                    nn.Linear(64, 128), 
                                    nn.ReLU(), 
