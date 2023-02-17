@@ -56,7 +56,7 @@ class LitDiffusionModel(pl.LightningModule):
         Notice here that `x` and `t` are passed separately. If you are using an architecture that combines
         `x` and `t` in a different way, modify this function appropriately.
         """
-        t_tensor = t * torch.ones((x.shape[0], 1))
+        t_tensor = t.reshape((x.shape[0], 1)) * torch.ones((x.shape[0], 1))
         print("SHAPE ---> ",torch.sin(0.1 * t_tensor / self.n_steps).shape)
         t_tensor = torch.cat((torch.sin(0.1 * t_tensor / self.n_steps), torch.cos(0.1 * t_tensor / self.n_steps)), dim = 1).to(device)
         # xt_app = torch.cat((x, t_tensor), dim = 1)
