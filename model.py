@@ -126,7 +126,7 @@ class LitDiffusionModel(pl.LightningModule):
         """
         Sample from p given x_t.
         """
-        t_tensor = self.time_embed(t*torch.ones((x_t.shape[0], 1)))
+        t_tensor = self.time_embed(t*torch.ones((x.shape[0], 1)))
         # t_tensor = torch.cat((torch.sin(0.1 * t_tensor / self.n_steps), torch.cos(0.1 * t_tensor / self.n_steps)), dim = 1)
         xt_app = torch.cat((x, t_tensor), dim = 1)
 
