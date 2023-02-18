@@ -1,8 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-train_data = [,2.629031181335449,]
-test_data = [,2.6372499465942383,]
+train_data = [2.7164673805236816,2.629031181335449,]
+test_data = [2.7049787044525146,2.6372499465942383,]
+
 
 
 t_steps = [10, 50, 100, 150, 200]
