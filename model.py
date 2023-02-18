@@ -2,17 +2,10 @@ import torch
 import numpy as np
 from tqdm import tqdm
 import pytorch_lightning as pl
-from collections import OrderedDict
-from torch import optim, nn, utils, Tensor
-
-use_cuda = torch.cuda.is_available()
-print('use_cuda: {}'.format(use_cuda))
-device = torch.device("cuda" if use_cuda else "cpu")
-print("Device to be used : ",device)
-
+from torch import optim, nn, utils
 
 class LitDiffusionModel(pl.LightningModule):
-    def __init__(self, n_dim=3, n_steps=200, lbeta=1e-5, ubeta=1e-2):
+    def __init__(self, n_dim=3, n_steps=200, lbeta=1e-5, ubeta=1e-2, layers_list=[5,32,64,64,3]):
         super().__init__()
         """
         If you include more hyperparams (e.g. `n_layers`), be sure to add that to `argparse` from `train.py`.
@@ -31,42 +24,10 @@ class LitDiffusionModel(pl.LightningModule):
         """
         
         self.time_embed = self._time_embed
-
-        # 5,32,64,64,3 == model 1
-        # self.model_1 = nn.Sequential(nn.Linear(5, 32), 
-        #                            nn.ReLU(), 
-        #                            nn.Linear(32, 64), 
-        #                            nn.ReLU(), 
-        #                            nn.Linear(64, 64), 
-        #                            nn.ReLU(), 
-        #                            nn.Linear(64, 3)
-        #                            )
-        
-        # tested on this model (2) for q-1, semi complex.
-        self.model = nn.Sequential(nn.Linear(5, 64), 
-                                #    nn.ReLU(), 
-                                   nn.Linear(64, 128), 
-                                #    nn.ReLU(), 
-                                   nn.Linear(128, 256), 
-                                #    nn.ReLU(), 
-                                   nn.Linear(256, 64),
-                                   nn.ReLU(), 
-                                   nn.Linear(64, 3)
-                                   )
-        
-        # model 3
-        # self.model_3 = nn.Sequential(nn.Linear(5, 16), 
-        #                            nn.ReLU(), 
-        #                            nn.Linear(16, 32), 
-        #                            nn.ReLU(), 
-        #                            nn.Linear(32, 64), 
-        #                            nn.ReLU(), 
-        #                            nn.Linear(64, 32),
-        #                            nn.ReLU(), 
-        #                            nn.Linear(32, 16),
-        #                            nn.ReLU(), 
-        #                            nn.Linear(16, 3)
-        #                            )
+        # 2 * batch_size + 3
+        self.layers_list = layers_list
+        self.model = nn.Sequential(*[nn.Linear(self.layers_list[i//2],self.layers_list[(i//2)+1])
+                                      if i%2==0 else nn.ReLU() for i in range(2*len(layers_list)-3)])
 
         """
         Be sure to save at least these 2 parameters in the model instance.
@@ -78,13 +39,11 @@ class LitDiffusionModel(pl.LightningModule):
         Sets up variables for noise schedule
         """
         self.betas, self.alphas, self.alpha_bars = self.init_alpha_beta_schedule(lbeta, ubeta)
-    
 
     def _time_embed(self, t):
         t_tensor = t.reshape((-1, 1))
         t_tensor = torch.cat((torch.sin(0.1 * t_tensor / self.n_steps), torch.cos(0.1 * t_tensor / self.n_steps)), dim = 1)
         return t_tensor
-
 
     def forward(self, x, t):
         """
@@ -92,8 +51,10 @@ class LitDiffusionModel(pl.LightningModule):
         Notice here that `x` and `t` are passed separately. If you are using an architecture that combines
         `x` and `t` in a different way, modify this function appropriately.
         """
+        # print("SHAPE ---> ",torch.sin(0.1 * t_tensor / self.n_steps).shape)
+        # xt_app = torch.cat((x, t_tensor), dim = 1)
         if not isinstance(t, torch.Tensor):
-            t = torch.LongTensor([t]).expand(x.size(0))
+             t = torch.LongTensor([t]).expand(x.size(0))
         t_embed = self.time_embed(t)
         # print("X shape = ",x.shape," t_tensor shape = ",t_tensor.shape)
         input_model = torch.cat((x, t_embed), dim=1).float().to(device)
@@ -113,22 +74,24 @@ class LitDiffusionModel(pl.LightningModule):
         return betas, alphas, alpha_bars
     
 
-    def q_sample(self, x, t):
+    def q_sample(self, x_0, t):
         """
-        Sample from q given x_t.
+        Sample from q given x_0. Return x_t.
         """
+        # x = torch.Tensor(x)
+        x = x_0
         norm = torch.randn_like(x).to(device)
         t = t.reshape(-1).long()
+        # ab = alpha_bar at t timestep
         ab = torch.index_select(self.alpha_bars.reshape(-1), 0, t).reshape(-1,1).to(device)
         return ab.sqrt() * x + (1 - ab).sqrt() * norm, norm
 
-    def p_sample(self, x, t):
+    def p_sample(self, x_t, t):
         """
-        Sample from p given x_t.
+        Sample from p given x_t. Return x_t-1.
         """
-        t_tensor = self.time_embed(t*torch.ones((x.shape[0], 1)))
-        # t_tensor = torch.cat((torch.sin(0.1 * t_tensor / self.n_steps), torch.cos(0.1 * t_tensor / self.n_steps)), dim = 1)
-        xt_app = torch.cat((x, t_tensor), dim = 1)
+        t_tensor = self.time_embed(t*torch.ones((x_t.shape[0], 1)))
+        xt_app = torch.cat((x_t, t_tensor), dim = 1)
 
         beta = self.betas[t]
         alpha = self.alphas[t]
@@ -136,11 +99,11 @@ class LitDiffusionModel(pl.LightningModule):
 
         mod_res = self.model(xt_app)
         term1 = beta * mod_res / (1 - alpha_bar).sqrt()
-        term1 = (x - term1) / alpha.sqrt()
+        mean = (x_t - term1) / alpha.sqrt()
 
-        norm = beta.sqrt() * torch.randn_like(term1)
-        term2 = norm if t > 0 else 0
-        return term1 + term2
+        var_noise = beta.sqrt() * torch.randn_like(mean)
+        var_noise = var_noise if t > 0 else 0
+        return mean + var_noise
 
 
     def training_step(self, batch, batch_idx):
@@ -159,13 +122,15 @@ class LitDiffusionModel(pl.LightningModule):
         [2]: https://pytorch-lightning.readthedocs.io/en/stable/
         [3]: https://www.pytorchlightning.ai/tutorials
         """
-        X_T = batch
-        X_T = X_T.to(torch.float32).to(device)
+        # print("batch_idx = ",batch_idx)
+        # print(batch)
+        x_0 = batch
+        x_0 = x_0.to(torch.float32).to(device)
         t = np.random.randint(0, self.n_steps, (batch.shape[0], ))
         t = torch.Tensor(t)
-        X_noise,noise=self.q_sample(X_T,t.long())
-        X_T_pred = self.forward(X_T.to(device),t.reshape((-1,1)).to(device))
-        loss = nn.functional.mse_loss(X_T_pred, noise)
+        x_t, noise = self.q_sample(x_0, t.long())
+        x_t_pred = self.forward(x_t.to(device), t.reshape((-1,1)).to(device))
+        loss = nn.functional.mse_loss(x_t_pred, noise)
         return loss
         
 
@@ -195,6 +160,8 @@ class LitDiffusionModel(pl.LightningModule):
                 xt = self.p_sample(xt, self.n_steps - t - 1)
                 if return_intermediate:
                     ls.append(xt.cpu().detach().numpy())
+        
+        # print("1 ==> ",xt.cpu().detach().numpy().shape," 2 => ",np.array(ls).shape)
         return xt.cpu().detach() if not return_intermediate else xt.cpu().detach(), torch.tensor(np.array(ls))
 
     def configure_optimizers(self):

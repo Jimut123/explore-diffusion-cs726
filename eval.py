@@ -2,7 +2,7 @@ import os
 import argparse
 import torch
 import numpy as np
-from model import LitDiffusionModel
+from model_f import LitDiffusionModel
 from eval_utils import *
 
 parser = argparse.ArgumentParser()
