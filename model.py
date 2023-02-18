@@ -107,10 +107,10 @@ class LitDiffusionModel(pl.LightningModule):
         is included correctly while saving and loading your checkpoints.
         """
         # linear
-        # betas = torch.linspace(start = lbeta, end = ubeta, steps = self.n_steps)
+        betas = torch.linspace(start = lbeta, end = ubeta, steps = self.n_steps)
 
         # quad
-        betas = torch.linspace(lbeta ** 0.5, ubeta ** 0.5, self.n_steps) ** 2
+        # betas = torch.linspace(lbeta ** 0.5, ubeta ** 0.5, self.n_steps) ** 2
 
         # sigmoid
         # betas = torch.linspace(-6, 6, self.n_steps)
