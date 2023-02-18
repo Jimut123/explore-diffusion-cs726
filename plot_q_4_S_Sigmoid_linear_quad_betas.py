@@ -1,14 +1,14 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-train_data_sigmoid = [2.6103525161743164, 2.600022077560425, ]
-test_data_sigmoid = [2.6182682514190674, 2.610560894012451, ]
+train_data_sigmoid = [2.6103525161743164, 2.600022077560425, 2.70386004447937]
+test_data_sigmoid = [2.6182682514190674, 2.610560894012451, 2.7158315181732178]
 
-train_data_linear = [,,]
-test_data_linear = [,,]
+train_data_linear = [2.6100616455078125,,]
+test_data_linear = [2.6182122230529785,,]
 
-train_data_quad = [,,]
-test_data_quad = [,,]
+train_data_quad = [2.6206560134887695,,]
+test_data_quad = [2.628101348876953,,]
 
 
 
