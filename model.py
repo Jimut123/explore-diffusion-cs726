@@ -10,64 +10,6 @@ print('use_cuda: {}'.format(use_cuda))
 device = torch.device("cuda" if use_cuda else "cpu")
 print("Device to be used : ",device)
 
-"""
-1.1.1
-
-python3 train.py --n_epochs 500
-
-python eval.py --ckpt_path runs/n_dim=3,n_steps=50,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=500/last.ckpt \
-                --hparams_path runs/n_dim=3,n_steps=50,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=500/lightning_logs/version_0/hparams.yaml \
-                --eval_nll --vis_diffusion --vis_overlay
-
-
-
-1.1.2
-
-python3 train.py --n_epochs 500 --train_data_path ./data/helix_3D_train.npy
-
-python eval.py --ckpt_path runs/n_dim=3,n_steps=50,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=500/last.ckpt \
-                --hparams_path runs/n_dim=3,n_steps=50,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=500/lightning_logs/version_0/hparams.yaml \
-                --eval_nll --vis_diffusion --vis_overlay --train_data_path ./data/helix_3D_train.npy --test_data_path ./data/helix_3D_test.npy
-
-
-1.2.1
-
-python3 train.py --n_epochs 1000
-
-python eval.py --ckpt_path runs/n_dim=3,n_steps=50,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=1000/last.ckpt \
-                --hparams_path runs/n_dim=3,n_steps=50,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=1000/lightning_logs/version_0/hparams.yaml \
-                --eval_nll --vis_diffusion --vis_overlay
-
-
-1.2.2
-
-python3 train.py --n_epochs 1000 --train_data_path ./data/helix_3D_train.npy
-
-python eval.py --ckpt_path runs/n_dim=3,n_steps=50,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=1000/last.ckpt \
-                --hparams_path runs/n_dim=3,n_steps=50,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=1000/lightning_logs/version_0/hparams.yaml \
-                --eval_nll --vis_diffusion --vis_overlay --train_data_path ./data/helix_3D_train.npy --test_data_path ./data/helix_3D_test.npy
-
-
-1.3.1
-
-python3 train.py --n_epochs 2000
-
-python eval.py --ckpt_path runs/n_dim=3,n_steps=50,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=2000/last.ckpt \
-                --hparams_path runs/n_dim=3,n_steps=50,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=2000/lightning_logs/version_0/hparams.yaml \
-                --eval_nll --vis_diffusion --vis_overlay
-
-
-
-1.3.2
-
-python3 train.py --n_epochs 2000 --train_data_path ./data/helix_3D_train.npy
-
-python eval.py --ckpt_path runs/n_dim=3,n_steps=50,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=2000/last.ckpt \
-                --hparams_path runs/n_dim=3,n_steps=50,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=2000/lightning_logs/version_0/hparams.yaml \
-                --eval_nll --vis_diffusion --vis_overlay --train_data_path ./data/helix_3D_train.npy --test_data_path ./data/helix_3D_test.npy
-
-
-"""
 
 class LitDiffusionModel(pl.LightningModule):
     def __init__(self, n_dim=3, n_steps=200, lbeta=1e-5, ubeta=1e-2):
@@ -90,16 +32,27 @@ class LitDiffusionModel(pl.LightningModule):
         
         self.time_embed = None
 
-        self.model = nn.Sequential(nn.Linear(5, 64), 
+        # 5,32,64,64,3 
+        self.model = nn.Sequential(nn.Linear(5, 32), 
                                    nn.ReLU(), 
-                                   nn.Linear(64, 128), 
+                                   nn.Linear(32, 64), 
                                    nn.ReLU(), 
-                                   nn.Linear(128, 256), 
-                                   nn.ReLU(), 
-                                   nn.Linear(256, 64),
+                                   nn.Linear(64, 64), 
                                    nn.ReLU(), 
                                    nn.Linear(64, 3)
                                    )
+        
+        # tested on this model for q-1, semi complex.
+        # self.model_2 = nn.Sequential(nn.Linear(5, 64), 
+        #                            nn.ReLU(), 
+        #                            nn.Linear(64, 128), 
+        #                            nn.ReLU(), 
+        #                            nn.Linear(128, 256), 
+        #                            nn.ReLU(), 
+        #                            nn.Linear(256, 64),
+        #                            nn.ReLU(), 
+        #                            nn.Linear(64, 3)
+        #                            )
 
         """
         Be sure to save at least these 2 parameters in the model instance.
