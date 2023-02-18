@@ -30,7 +30,7 @@ class LitDiffusionModel(pl.LightningModule):
         Make sure that your hyperparameter behaves as expected and is being saved correctly in `hparams.yaml`.
         """
         
-        self.time_embed = self._time_embed
+        self.time_embed = None
 
         # 5,32,64,64,3 == model 1
         # self.model_1 = nn.Sequential(nn.Linear(5, 32), 
@@ -78,13 +78,6 @@ class LitDiffusionModel(pl.LightningModule):
         Sets up variables for noise schedule
         """
         self.betas, self.alphas, self.alpha_bars = self.init_alpha_beta_schedule(lbeta, ubeta)
-    
-
-    def _time_embed(self, t):
-        t_tensor = t.reshape((-1, 1))
-        t_tensor = torch.cat((torch.sin(0.1 * t_tensor / self.n_steps), torch.cos(0.1 * t_tensor / self.n_steps)), dim = 1)
-        return t_tensor
-
 
     def forward(self, x, t):
         """
@@ -92,12 +85,9 @@ class LitDiffusionModel(pl.LightningModule):
         Notice here that `x` and `t` are passed separately. If you are using an architecture that combines
         `x` and `t` in a different way, modify this function appropriately.
         """
-        if not isinstance(t, torch.Tensor):
-            t = torch.LongTensor([t]).expand(x.size(0))
-        t_embed = self.time_embed(t)
-        # print("X shape = ",x.shape," t_tensor shape = ",t_tensor.shape)
-        input_model = torch.cat((x, t_embed), dim=1).float().to(device)
-        # print("Model input = ",input_model.shape)
+        t_tensor = t.reshape((x.shape[0], 1)) * torch.ones((x.shape[0], 1))
+        t_tensor = torch.cat((torch.sin(0.1 * t_tensor / self.n_steps), torch.cos(0.1 * t_tensor / self.n_steps)), dim = 1).to(device)
+        input_model = torch.cat((x, t_tensor), dim=1).float().to(device)
         return self.model(input_model)
 
 
@@ -118,16 +108,16 @@ class LitDiffusionModel(pl.LightningModule):
         Sample from q given x_t.
         """
         norm = torch.randn_like(x).to(device)
-        t = t.reshape(-1).long()
-        ab = torch.index_select(self.alpha_bars.reshape(-1), 0, t).reshape(-1,1).to(device)
+        ab = self.alpha_bars[t]
+        ab = ab.reshape([x.shape[0]]+(len(x.shape)-1)*[1]).to(device)
         return ab.sqrt() * x + (1 - ab).sqrt() * norm, norm
 
     def p_sample(self, x, t):
         """
         Sample from p given x_t.
         """
-        t_tensor = self.time_embed(t*torch.ones((x_t.shape[0], 1)))
-        # t_tensor = torch.cat((torch.sin(0.1 * t_tensor / self.n_steps), torch.cos(0.1 * t_tensor / self.n_steps)), dim = 1)
+        t_tensor = t * torch.ones((x.shape[0], 1))
+        t_tensor = torch.cat((torch.sin(0.1 * t_tensor / self.n_steps), torch.cos(0.1 * t_tensor / self.n_steps)), dim = 1)
         xt_app = torch.cat((x, t_tensor), dim = 1)
 
         beta = self.betas[t]
@@ -160,11 +150,12 @@ class LitDiffusionModel(pl.LightningModule):
         [3]: https://www.pytorchlightning.ai/tutorials
         """
         X_T = batch
-        X_T = X_T.to(torch.float32).to(device)
+        X_T = X_T.to(torch.float32)
         t = np.random.randint(0, self.n_steps, (batch.shape[0], ))
-        t = torch.Tensor(t)
-        X_noise,noise=self.q_sample(X_T,t.long())
-        X_T_pred = self.forward(X_T.to(device),t.reshape((-1,1)).to(device))
+        t_tensor = torch.Tensor(t).reshape((-1, 1))
+        t_tensor = torch.cat((torch.sin(0.1 * t_tensor / self.n_steps), torch.cos(0.1 * t_tensor / self.n_steps)), dim = 1)
+        X_noise,noise=self.q_sample(X_T,t)
+        X_T_pred = self.forward(X_T,torch.tensor(t))
         loss = nn.functional.mse_loss(X_T_pred, noise)
         return loss
         
