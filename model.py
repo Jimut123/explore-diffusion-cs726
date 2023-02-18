@@ -78,7 +78,12 @@ class LitDiffusionModel(pl.LightningModule):
         Sets up variables for noise schedule
         """
         self.betas, self.alphas, self.alpha_bars = self.init_alpha_beta_schedule(lbeta, ubeta)
-
+    
+    def _time_embed(self, t):
+        t_tensor = t.reshape((-1, 1))
+        t_tensor = torch.cat((torch.sin(0.1 * t_tensor / self.n_steps), torch.cos(0.1 * t_tensor / self.n_steps)), dim = 1)
+        return t_tensor
+        
     def forward(self, x, t):
         """
         Similar to `forward` function in `nn.Module`. 
