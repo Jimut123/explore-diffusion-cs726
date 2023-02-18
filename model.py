@@ -12,9 +12,9 @@ print("Device to be used : ",device)
 
 
 class LitDiffusionModel(pl.LightningModule):
-    # def __init__(self, n_dim=3, n_steps=200, lbeta=1e-5, ubeta=1e-2):
+    def __init__(self, n_dim=3, n_steps=200, lbeta=1e-5, ubeta=1e-2):
     # def __init__(self, n_dim=3, n_steps=200, lbeta=1e-7, ubeta=1e-1):
-    def __init__(self, n_dim=3, n_steps=200, lbeta=1e-10, ubeta=1e2):
+    # def __init__(self, n_dim=3, n_steps=200, lbeta=1e-10, ubeta=1e2):
         super().__init__()
         """
         If you include more hyperparams (e.g. `n_layers`), be sure to add that to `argparse` from `train.py`.
@@ -110,11 +110,11 @@ class LitDiffusionModel(pl.LightningModule):
         # betas = torch.linspace(start = lbeta, end = ubeta, steps = self.n_steps)
 
         # quad
-        # betas = torch.linspace(lbeta ** 0.5, ubeta ** 0.5, self.n_steps) ** 2
+        betas = torch.linspace(lbeta ** 0.5, ubeta ** 0.5, self.n_steps) ** 2
 
         # sigmoid
-        betas = torch.linspace(-6, 6, self.n_steps)
-        betas = torch.sigmoid(betas) * (ubeta - lbeta) + lbeta
+        # betas = torch.linspace(-6, 6, self.n_steps)
+        # betas = torch.sigmoid(betas) * (ubeta - lbeta) + lbeta
 
 
 

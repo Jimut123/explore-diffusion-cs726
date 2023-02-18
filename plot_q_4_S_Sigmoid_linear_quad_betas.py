@@ -1,17 +1,25 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-train_data = [2.7164673805236816,2.629031181335449,2.6100616455078125, 2.6111505031585693, 2.615083932876587]
-test_data = [2.7049787044525146,2.6372499465942383,2.6182122230529785, 2.6186928749084473, 2.6213560104370117]
+train_data_sigmoid = [2.6103525161743164, 2.600022077560425, ]
+test_data_sigmoid = [2.6182682514190674, 2.610560894012451, ]
 
-test_nll: 2.6182682514190674
-train_nll: 2.6103525161743164
+train_data_linear = [,,]
+test_data_linear = [,,]
 
-t_steps = [10, 50, 100, 150, 200]
+train_data_quad = [,,]
+test_data_quad = [,,]
+
+
+
+schedule_beta = ["l_beta=1e-05,u_beta=1e-02", "l_beta=1e-07,u_beta=1e-01", "l_beta=1e-07,u_beta=1e-03"]
+
+
+
 
 
 plt.figure(figsize=(12,6))
-plt.title('Variation of NLL Vs #Time Steps (3d_sin_5_5 dataset)', fontsize=20, fontname = 'DejaVu Serif', fontweight = 500)
+plt.title('Variation of schedulers (3d_sin_5_5 dataset)', fontsize=20, fontname = 'DejaVu Serif', fontweight = 500)
 
 plt.plot(t_steps, train_data, color='blue')#, linestyle='-.', dashes=(5, 1), linewidth=3.0)
 plt.plot(t_steps, test_data, color='red')
