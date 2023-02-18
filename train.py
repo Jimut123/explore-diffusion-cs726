@@ -17,7 +17,7 @@ training_args.add_argument('--seed', type=int, default=1618, help='Random seed f
 training_args.add_argument('--n_epochs', type=int, default=500, help='Number of training epochs')
 training_args.add_argument('--batch_size', type=int, default=1024, help='Batch size for training dataloader')
 training_args.add_argument('--train_data_path', type=str, default='./data/3d_sin_5_5_train.npy', help='Path to training data numpy file')
-training_args.add_argument('--savedir', type=str, default='./runs/', help='Root directory where all checkpoint and logs will be saved')
+training_args.add_argument('--savedir', type=str, default='./runs', help='Root directory where all checkpoint and logs will be saved')
 
 args = parser.parse_args()
 
