@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-train_data = [2.7164673805236816,2.629031181335449,2.6100616455078125, 2.6111505031585693]
-test_data = [2.7049787044525146,2.6372499465942383,2.6182122230529785, 2.6186928749084473]
+train_data = [2.7164673805236816,2.629031181335449,2.6100616455078125, 2.6111505031585693, 2.615083932876587]
+test_data = [2.7049787044525146,2.6372499465942383,2.6182122230529785, 2.6186928749084473, 2.6213560104370117]
 
 
 
@@ -14,8 +14,8 @@ plt.title('Variation of NLL Vs #Time Steps (3d_sin_5_5 dataset)', fontsize=20, f
 
 plt.plot(t_steps, train_data, color='blue')#, linestyle='-.', dashes=(5, 1), linewidth=3.0)
 plt.plot(t_steps, test_data, color='red')
-plt.xticks([i for i in range(500,2001,500)],fontsize=20)
-plt.yticks([i for i in np.arange(3.44,3.48,0.02)],fontsize=20)
+plt.xticks([i for i in range(10,200,20)],fontsize=20)
+plt.yticks([i for i in np.arange(2.6,2.75,0.04)],fontsize=20)
 plt.xlabel("Time Steps",fontsize=20)
 
 plt.ylabel("Neg. Log Likelihood",fontsize=20)
