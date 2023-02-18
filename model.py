@@ -4,6 +4,11 @@ from tqdm import tqdm
 import pytorch_lightning as pl
 from torch import optim, nn, utils
 
+use_cuda = torch.cuda.is_available()
+print('use_cuda: {}'.format(use_cuda))
+device = torch.device("cuda" if use_cuda else "cpu")
+print("Device to be used : ",device)
+
 class LitDiffusionModel(pl.LightningModule):
     def __init__(self, n_dim=3, n_steps=200, lbeta=1e-5, ubeta=1e-2, layers_list=[5,32,64,64,3]):
         super().__init__()

@@ -102,7 +102,7 @@ python eval.py --ckpt_path runs/n_dim=3,n_steps=50,lbeta=1.000e-05,ubeta=1.280e-
 
 3.1.1 => sin dataset
 
-python3 train.py --n_epochs 500 --n_steps 10
+python3 train.py --n_epochs 500 --n_steps 50
 
 
 python eval.py --ckpt_path runs/n_dim=3,n_steps=50,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=500/last.ckpt \
