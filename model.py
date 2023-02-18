@@ -36,13 +36,17 @@ class LitDiffusionModel(pl.LightningModule):
         """
         
         self.time_embed = None
-        # 2 * batch_size + 3
+
         self.model = nn.Sequential(nn.Linear(5, 64), 
                                    nn.ReLU(), 
                                    nn.Linear(64, 128), 
                                    nn.ReLU(), 
-                                   nn.Linear(128, 3),
-                                   nn.ReLU())
+                                   nn.Linear(128, 256), 
+                                   nn.ReLU(), 
+                                   nn.Linear(256, 64),
+                                   nn.ReLU(), 
+                                   nn.Linear(64, 3)
+                                   )
 
         """
         Be sure to save at least these 2 parameters in the model instance.
@@ -62,15 +66,8 @@ class LitDiffusionModel(pl.LightningModule):
         `x` and `t` in a different way, modify this function appropriately.
         """
         t_tensor = t.reshape((x.shape[0], 1)) * torch.ones((x.shape[0], 1))
-        # print("SHAPE ---> ",torch.sin(0.1 * t_tensor / self.n_steps).shape)
         t_tensor = torch.cat((torch.sin(0.1 * t_tensor / self.n_steps), torch.cos(0.1 * t_tensor / self.n_steps)), dim = 1).to(device)
-        # xt_app = torch.cat((x, t_tensor), dim = 1)
-        # if not isinstance(t, torch.Tensor):
-        #      t = torch.LongTensor([t]).expand(x.size(0))
-        # t_embed = self.time_embed(t)e
-        # print("X shape = ",x.shape," t_tensor shape = ",t_tensor.shape)
         input_model = torch.cat((x, t_tensor), dim=1).float().to(device)
-        # print("Model input = ",input_model.shape)
         return self.model(input_model)
 
 
@@ -90,9 +87,7 @@ class LitDiffusionModel(pl.LightningModule):
         """
         Sample from q given x_t.
         """
-        # x = torch.Tensor(x)
         norm = torch.randn_like(x).to(device)
-        # ab = alpha_bar at t timestep
         ab = self.alpha_bars[t]
         ab = ab.reshape([x.shape[0]]+(len(x.shape)-1)*[1]).to(device)
         return ab.sqrt() * x + (1 - ab).sqrt() * norm, norm
@@ -134,19 +129,13 @@ class LitDiffusionModel(pl.LightningModule):
         [2]: https://pytorch-lightning.readthedocs.io/en/stable/
         [3]: https://www.pytorchlightning.ai/tutorials
         """
-        # print("batch_idx = ",batch_idx)
-        # print(batch)
         X_T = batch
         X_T = X_T.to(torch.float32)
         t = np.random.randint(0, self.n_steps, (batch.shape[0], ))
         t_tensor = torch.Tensor(t).reshape((-1, 1))
         t_tensor = torch.cat((torch.sin(0.1 * t_tensor / self.n_steps), torch.cos(0.1 * t_tensor / self.n_steps)), dim = 1)
         X_noise,noise=self.q_sample(X_T,t)
-        # X_T = torch.tensor(X_T,dtype=float).to(device)
-        # X_T = torch.from_numpy(X_T)
-        # print("----"*64,X_T.shape," DType = ",X_T.dtype," zero = ",X_T[0].dtype)
         X_T_pred = self.forward(X_T,torch.tensor(t))
-        # print("+++"*64,X_T_pred.shape," DType = ",X_T_pred.dtype," zero = ",X_T_pred[0].dtype)
         loss = nn.functional.mse_loss(X_T_pred, noise)
         return loss
         
@@ -177,8 +166,6 @@ class LitDiffusionModel(pl.LightningModule):
                 xt = self.p_sample(xt, self.n_steps - t - 1)
                 if return_intermediate:
                     ls.append(xt.cpu().detach().numpy())
-        
-        # print("1 ==> ",xt.cpu().detach().numpy().shape," 2 => ",np.array(ls).shape)
         return xt.cpu().detach() if not return_intermediate else xt.cpu().detach(), torch.tensor(np.array(ls))
 
     def configure_optimizers(self):
