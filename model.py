@@ -35,26 +35,26 @@ class LitDiffusionModel(pl.LightningModule):
         self.time_embed = self._time_embed
 
         # 5,32,64,64,3 == model 1
-        # self.model = nn.Sequential(nn.Linear(5, 32), 
-        #                            nn.ReLU(), 
-        #                            nn.Linear(32, 64), 
-        #                            nn.ReLU(), 
-        #                            nn.Linear(64, 64), 
-        #                            nn.ReLU(), 
-        #                            nn.Linear(64, 3)
-        #                            )
-        
-        # tested on this model (2) for q-1, semi complex.
-        self.model = nn.Sequential(nn.Linear(5, 64), 
+        self.model = nn.Sequential(nn.Linear(5, 32), 
                                    nn.ReLU(), 
-                                   nn.Linear(64, 128), 
+                                   nn.Linear(32, 64), 
                                    nn.ReLU(), 
-                                   nn.Linear(128, 256), 
-                                   nn.ReLU(), 
-                                   nn.Linear(256, 64),
+                                   nn.Linear(64, 64), 
                                    nn.ReLU(), 
                                    nn.Linear(64, 3)
                                    )
+        
+        # tested on this model (2) for q-1, semi complex.
+        # self.model = nn.Sequential(nn.Linear(5, 64), 
+        #                            nn.ReLU(), 
+        #                            nn.Linear(64, 128), 
+        #                            nn.ReLU(), 
+        #                            nn.Linear(128, 256), 
+        #                            nn.ReLU(), 
+        #                            nn.Linear(256, 64),
+        #                            nn.ReLU(), 
+        #                            nn.Linear(64, 3)
+        #                            )
         
         # model 3
         # self.model_3 = nn.Sequential(nn.Linear(5, 16), 

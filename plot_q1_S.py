@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
-train_data = [3.4140548706054688, 3.4030673503875732, 3.3906214237213135]
+train_data = [2.6100616455078125,2.5893056392669678,2.607635736465454]
 
-test_data = [3.42276668548584, 3.4120359420776367, 3.398831844329834]
+test_data = [2.6182122230529785, 2.59806752204895, 2.616995334625244]
 
 epochs = [500, 1000, 2000]
 
@@ -12,7 +12,7 @@ plt.title('Variation of NLL Vs # Epochs (3d_sin_5_5 dataset)', fontsize=20, font
 plt.plot(epochs, train_data, color='blue')#, linestyle='-.', dashes=(5, 1), linewidth=3.0)
 plt.plot(epochs, test_data, color='red')
 plt.xticks([i for i in range(500,2001,500)],fontsize=20)
-plt.yticks([i for i in np.arange(3.39,3.44,0.02)],fontsize=20)
+plt.yticks([i for i in np.arange(2.58,2.64,0.03)],fontsize=20)
 plt.xlabel("# Epochs",fontsize=20)
 plt.ylabel("Neg. Log Likelihood",fontsize=20)
 plt.yticks(fontsize=20)
