@@ -1,4 +1,0 @@
-lbeta: 1.0e-07
-n_dim: 3
-n_steps: 100
-ubeta: 0.001
