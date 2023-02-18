@@ -44,11 +44,11 @@ class LitDiffusionModel(pl.LightningModule):
         
         # tested on this model (2) for q-1, semi complex.
         self.model = nn.Sequential(nn.Linear(5, 64), 
-                                   nn.ReLU(), 
+                                #    nn.ReLU(), 
                                    nn.Linear(64, 128), 
-                                   nn.ReLU(), 
+                                #    nn.ReLU(), 
                                    nn.Linear(128, 256), 
-                                   nn.ReLU(), 
+                                #    nn.ReLU(), 
                                    nn.Linear(256, 64),
                                    nn.ReLU(), 
                                    nn.Linear(64, 3)
