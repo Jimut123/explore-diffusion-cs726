@@ -7,7 +7,7 @@ test_data = [3.42276668548584, 3.4120359420776367, 3.398831844329834]
 epochs = [500, 1000, 2000]
 
 plt.figure(figsize=(12,6))
-plt.title('Variation of NLL Vs # Epochs', fontsize=20, fontname = 'DejaVu Serif', fontweight = 500)
+plt.title('Variation of NLL Vs # Epochs (3d_sin_5_5 dataset)', fontsize=20, fontname = 'DejaVu Serif', fontweight = 500)
 
 plt.plot(epochs, train_data, color='blue')#, linestyle='-.', dashes=(5, 1), linewidth=3.0)
 plt.plot(epochs, test_data, color='red')
