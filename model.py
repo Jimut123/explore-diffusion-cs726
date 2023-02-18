@@ -32,8 +32,8 @@ class LitDiffusionModel(pl.LightningModule):
         
         self.time_embed = None
 
-        # 5,32,64,64,3 
-        # self.model = nn.Sequential(nn.Linear(5, 32), 
+        # 5,32,64,64,3 == model 1
+        # self.model_1 = nn.Sequential(nn.Linear(5, 32), 
         #                            nn.ReLU(), 
         #                            nn.Linear(32, 64), 
         #                            nn.ReLU(), 
@@ -42,31 +42,31 @@ class LitDiffusionModel(pl.LightningModule):
         #                            nn.Linear(64, 3)
         #                            )
         
-        # tested on this model for q-1, semi complex.
-        # self.model_2 = nn.Sequential(nn.Linear(5, 64), 
-        #                            nn.ReLU(), 
-        #                            nn.Linear(64, 128), 
-        #                            nn.ReLU(), 
-        #                            nn.Linear(128, 256), 
-        #                            nn.ReLU(), 
-        #                            nn.Linear(256, 64),
-        #                            nn.ReLU(), 
-        #                            nn.Linear(64, 3)
-        #                            )
-
-
-        self.model = nn.Sequential(nn.Linear(5, 16), 
+        # tested on this model (2) for q-1, semi complex.
+        self.model = nn.Sequential(nn.Linear(5, 64), 
                                    nn.ReLU(), 
-                                   nn.Linear(16, 32), 
+                                   nn.Linear(64, 128), 
                                    nn.ReLU(), 
-                                   nn.Linear(32, 64), 
+                                   nn.Linear(128, 256), 
                                    nn.ReLU(), 
-                                   nn.Linear(64, 32),
+                                   nn.Linear(256, 64),
                                    nn.ReLU(), 
-                                   nn.Linear(32, 16),
-                                   nn.ReLU(), 
-                                   nn.Linear(16, 3)
+                                   nn.Linear(64, 3)
                                    )
+        
+        # model 3
+        # self.model_3 = nn.Sequential(nn.Linear(5, 16), 
+        #                            nn.ReLU(), 
+        #                            nn.Linear(16, 32), 
+        #                            nn.ReLU(), 
+        #                            nn.Linear(32, 64), 
+        #                            nn.ReLU(), 
+        #                            nn.Linear(64, 32),
+        #                            nn.ReLU(), 
+        #                            nn.Linear(32, 16),
+        #                            nn.ReLU(), 
+        #                            nn.Linear(16, 3)
+        #                            )
 
         """
         Be sure to save at least these 2 parameters in the model instance.
