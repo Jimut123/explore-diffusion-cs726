@@ -33,26 +33,26 @@ class LitDiffusionModel(pl.LightningModule):
         self.time_embed = self._time_embed
 
         # 5,32,64,64,3 == model 1
-        # self.model_1 = nn.Sequential(nn.Linear(5, 32), 
-        #                            nn.ReLU(), 
-        #                            nn.Linear(32, 64), 
-        #                            nn.ReLU(), 
-        #                            nn.Linear(64, 64), 
-        #                            nn.ReLU(), 
-        #                            nn.Linear(64, 3)
-        #                            )
-        
-        # tested on this model (2) for q-1, semi complex.
-        self.model = nn.Sequential(nn.Linear(5, 64), 
+        self.model = nn.Sequential(nn.Linear(5, 32), 
                                    nn.ReLU(), 
-                                   nn.Linear(64, 128), 
+                                   nn.Linear(32, 64), 
                                    nn.ReLU(), 
-                                   nn.Linear(128, 256), 
-                                   nn.ReLU(), 
-                                   nn.Linear(256, 64),
+                                   nn.Linear(64, 64), 
                                    nn.ReLU(), 
                                    nn.Linear(64, 3)
                                    )
+        
+        # tested on this model (2) for q-1, semi complex.
+        # self.model = nn.Sequential(nn.Linear(5, 64), 
+        #                            nn.ReLU(), 
+        #                            nn.Linear(64, 128), 
+        #                            nn.ReLU(), 
+        #                            nn.Linear(128, 256), 
+        #                            nn.ReLU(), 
+        #                            nn.Linear(256, 64),
+        #                            nn.ReLU(), 
+        #                            nn.Linear(64, 3)
+        #                            )
         
         # model 3
         # self.model_3 = nn.Sequential(nn.Linear(5, 16), 
@@ -115,9 +115,8 @@ class LitDiffusionModel(pl.LightningModule):
         Sample from q given x_t.
         """
         norm = torch.randn_like(x).to(device)
-        t = t.reshape(-1)
-        ab = self.alpha_bars[t]
-        ab = ab.reshape([x.shape[0]]+(len(x.shape)-1)*[1]).to(device)
+        t = t.reshape(-1).long()
+        ab = torch.index_select(self.alpha_bars.reshape(-1), 0, t).reshape(-1,1).to(device)
         return ab.sqrt() * x + (1 - ab).sqrt() * norm, norm
 
     def p_sample(self, x, t):
@@ -155,13 +154,13 @@ class LitDiffusionModel(pl.LightningModule):
         [2]: https://pytorch-lightning.readthedocs.io/en/stable/
         [3]: https://www.pytorchlightning.ai/tutorials
         """
-        X_T = batch
-        X_T = X_T.to(torch.float32).to(device)
+        x_0 = batch
+        x_0 = x_0.to(torch.float32).to(device)
         t = np.random.randint(0, self.n_steps, (batch.shape[0], ))
-        t_tensor = torch.Tensor(t).reshape((-1, 1))
-        X_noise,noise=self.q_sample(X_T,t)
-        X_T_pred = self.forward(X_T.to(device),torch.tensor(t).to(device))
-        loss = nn.functional.mse_loss(X_T_pred, noise)
+        t = torch.Tensor(t)
+        x_t, noise = self.q_sample(x_0, t.long())
+        x_t_pred = self.forward(x_t.to(device), t.reshape((-1,1)).to(device))
+        loss = nn.functional.mse_loss(x_t_pred, noise)
         return loss
         
 
