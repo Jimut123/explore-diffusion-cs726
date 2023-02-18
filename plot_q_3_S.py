@@ -14,7 +14,7 @@ plt.title('Variation of NLL Vs #Time Steps (3d_sin_5_5 dataset)', fontsize=20, f
 
 plt.plot(t_steps, train_data, color='blue')#, linestyle='-.', dashes=(5, 1), linewidth=3.0)
 plt.plot(t_steps, test_data, color='red')
-plt.xticks([i for i in range(10,200,20)],fontsize=20)
+plt.xticks([i for i in range(0,201,20)],fontsize=20)
 plt.yticks([i for i in np.arange(2.6,2.75,0.04)],fontsize=20)
 plt.xlabel("Time Steps",fontsize=20)
 
