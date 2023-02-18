@@ -1,7 +1,7 @@
 import argparse
 import torch
 import pytorch_lightning as pl
-from model_f import LitDiffusionModel
+from model import LitDiffusionModel
 from dataset import ThreeDSinDataset
 
 parser = argparse.ArgumentParser()
