@@ -142,3 +142,43 @@ python3 train.py --n_epochs 500 --n_steps 200
 python eval.py --ckpt_path runs/n_dim=3,n_steps=200,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=500/last.ckpt \
                 --hparams_path runs/n_dim=3,n_steps=200,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=500/lightning_logs/version_0/hparams.yaml \
                 --eval_nll --vis_diffusion --vis_overlay
+
+
+
+
+3.2.1 => Helix dataset
+
+python3 train.py --n_epochs 500 --n_steps 10 --train_data_path ./data/helix_3D_train.npy
+
+python eval.py --ckpt_path runs/n_dim=3,n_steps=10,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=500/last.ckpt \
+                --hparams_path runs/n_dim=3,n_steps=10,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=500/lightning_logs/version_0/hparams.yaml \
+                --eval_nll --vis_diffusion --vis_overlay --train_data_path ./data/helix_3D_train.npy --test_data_path ./data/helix_3D_test.npy
+
+
+python3 train.py --n_epochs 500 --n_steps 50 --train_data_path ./data/helix_3D_train.npy
+
+python eval.py --ckpt_path runs/n_dim=3,n_steps=50,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=500/last.ckpt \
+                --hparams_path runs/n_dim=3,n_steps=50,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=500/lightning_logs/version_0/hparams.yaml \
+                --eval_nll --vis_diffusion --vis_overlay --train_data_path ./data/helix_3D_train.npy --test_data_path ./data/helix_3D_test.npy
+
+
+
+python3 train.py --n_epochs 500 --n_steps 100 --train_data_path ./data/helix_3D_train.npy
+
+python eval.py --ckpt_path runs/n_dim=3,n_steps=100,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=500/last.ckpt \
+                --hparams_path runs/n_dim=3,n_steps=100,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=500/lightning_logs/version_0/hparams.yaml \
+                --eval_nll --vis_diffusion --vis_overlay --train_data_path ./data/helix_3D_train.npy --test_data_path ./data/helix_3D_test.npy
+            
+
+python3 train.py --n_epochs 500 --n_steps 150 --train_data_path ./data/helix_3D_train.npy
+
+python eval.py --ckpt_path runs/n_dim=3,n_steps=150,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=500/last.ckpt \
+                --hparams_path runs/n_dim=3,n_steps=150,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=500/lightning_logs/version_0/hparams.yaml \
+                --eval_nll --vis_diffusion --vis_overlay --train_data_path ./data/helix_3D_train.npy --test_data_path ./data/helix_3D_test.npy
+
+
+python3 train.py --n_epochs 500 --n_steps 200 --train_data_path ./data/helix_3D_train.npy
+
+python eval.py --ckpt_path runs/n_dim=3,n_steps=200,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=500/last.ckpt \
+                --hparams_path runs/n_dim=3,n_steps=200,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=500/lightning_logs/version_0/hparams.yaml \
+                --eval_nll --vis_diffusion --vis_overlay --train_data_path ./data/helix_3D_train.npy --test_data_path ./data/helix_3D_test.npy
