@@ -83,7 +83,7 @@ class LitDiffusionModel(pl.LightningModule):
         t_tensor = t.reshape((-1, 1))
         t_tensor = torch.cat((torch.sin(0.1 * t_tensor / self.n_steps), torch.cos(0.1 * t_tensor / self.n_steps)), dim = 1)
         return t_tensor
-        
+
     def forward(self, x, t):
         """
         Similar to `forward` function in `nn.Module`. 
@@ -115,7 +115,7 @@ class LitDiffusionModel(pl.LightningModule):
         Sample from q given x_t.
         """
         norm = torch.randn_like(x).to(device)
-        t = t.reshape(-1).long()
+        t = t.reshape(-1)
         ab = self.alpha_bars[t]
         ab = ab.reshape([x.shape[0]]+(len(x.shape)-1)*[1]).to(device)
         return ab.sqrt() * x + (1 - ab).sqrt() * norm, norm
