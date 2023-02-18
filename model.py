@@ -104,7 +104,8 @@ class LitDiffusionModel(pl.LightningModule):
         switch between various schedules for answering q4 in depth. Make sure that this hyperparameter 
         is included correctly while saving and loading your checkpoints.
         """
-        betas = torch.linspace(start = lbeta, end = ubeta, steps = self.n_steps)
+        # betas = torch.linspace(start = lbeta, end = ubeta, steps = self.n_steps)
+        betas = torch.linspace(start=lbeta ** 0.5, end = ubeta ** 0.5, self.n_steps) ** 2
         alphas = 1 - betas
         alpha_bars = torch.cumprod(alphas, dim = 0)
         return betas, alphas, alpha_bars
