@@ -25,6 +25,7 @@ python eval.py --ckpt_path runs/n_dim=3,n_steps=50,lbeta=1.000e-05,ubeta=1.280e-
 
 python3 train.py --n_epochs 500 --train_data_path ./data/helix_3D_train.npy
 
+
 python eval.py --ckpt_path runs/n_dim=3,n_steps=50,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=500/last.ckpt \
                 --hparams_path runs/n_dim=3,n_steps=50,lbeta=1.000e-05,ubeta=1.280e-02,batch_size=1024,n_epochs=500/lightning_logs/version_0/hparams.yaml \
                 --eval_nll --vis_diffusion --vis_overlay --train_data_path ./data/helix_3D_train.npy --test_data_path ./data/helix_3D_test.npy
